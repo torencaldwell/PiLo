@@ -25,8 +25,8 @@ using namespace std;
 
 class PiLo{
 public:
-  Drive();                //Default Constructor
-  ~Drive();               //Destructor
+  PiLo();                //Default Constructor
+  ~PiLo();               //Destructor
 
   /*
   * Serial Operations
