@@ -79,13 +79,14 @@ string PiLo::sendCommand(int type, int left, int right){
 
   string cmd_base;
 
+  cout << "Type = " << type << endl;
 
   if(type == 1){
-    cmd_base = "GO ";
+    cmd_base = "GO:";
   }else{
-    cmd_base = "MOVE ";
+    cmd_base = "MOVE:";
   }
-  s << cmd_base << left << " " << right << "\r";
+  s << cmd_base << left << ":" << right << "\r";
   sendLine(s.str());
 
   return s.str();

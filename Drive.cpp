@@ -15,16 +15,19 @@
 
 fdserial *pi;
 
-void parseCommand(char*);
+void parseCommand(char* cmd);
+
+
 
 int main()                                    // Main function
 {
   pi = fdserial_open(1, 0, 0, 19200);         //Open a serial connection
+  
   char cmd[15];                               //Stores the raw command string
   
   char c;                                     //stores characters from serial
   int i=0;                                    //counter
-  while(1){
+  while(true){
     c = fdserial_rxChar(pi);                  //Get a character from serial
     cmd[i] = c;                               //Put it into cmd
     i++;
@@ -32,9 +35,12 @@ int main()                                    // Main function
     //End the string with a '\r' character
     if(c == '\r'){
       cmd[i] = '\0';                          //Terminate the string
+      if(i>=6){
+        //print(cmd);
+        parseCommand(cmd);                      //Parse the command
+      }     
       i = 0;
-      parseCommand(cmd);                      //Parse the command 
-      fdserial_rxFlush(pi);                   //Empty the rx buffer
+      //fdserial_rxFlush(pi);
     }  
   }      
 }
@@ -45,6 +51,7 @@ char leftString[5];           //Left wheel parameter  (string)
 char rightString[5];          //Right Wheel parameter (string)  
   
 void parseCommand(char* cmd){
+  bool err = false;
   
   int left, right;
   
@@ -55,6 +62,10 @@ void parseCommand(char* cmd){
   while(cmd[i] != ':'){
     type[j] = cmd[i];
     j++;i++;
+    if(j>4){
+      err = true;
+      break;
+    }      
   }
   i++;
   type[j] = '\0';
@@ -65,6 +76,10 @@ void parseCommand(char* cmd){
   while(cmd[i] != ':'){
     leftString[j] = cmd[i];
     j++;i++;
+    if(j>6){
+      err = true;
+      break;
+    }      
   }    
   i++;
   leftString[j] = '\0';
@@ -75,21 +90,26 @@ void parseCommand(char* cmd){
   while(cmd[i] != '\r'){
     rightString[j] = cmd[i];
     j++;i++;
+    if(j>6){
+      err = true;
+      break;
+    }      
   }
   rightString[j] = '\0';
   
+  if(!err){
+    //Convert the wheel parameters to ints
+    left = atoi(leftString);
+    right = atoi(rightString);
   
-  //Convert the wheel parameters to ints
-  left = atoi(leftString);
-  right = atoi(rightString);
-
-  //Print the command to the terminal
-  printf("%d, %d\n", left, right); 
-  
-  //Execute the command  
-  if(strcmp(type, "GO") == 0){
-    drive_speed(left, right);  
-  }else{
-    drive_goto(left, right);
-  }        
+    //Print the command to the terminal
+    printf("%d, %d\n", left, right); 
+   
+     //Execute the command  
+    if(strcmp(type, "GO") == 0){
+      drive_speed(left, right);  
+    }else if(strcmp(type, "MOVE") == 0){
+      drive_goto(left, right);
+    } 
+  }    
 }  
