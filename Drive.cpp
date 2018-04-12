@@ -21,7 +21,7 @@ void parseCommand(char* cmd);
 
 int main()                                    // Main function
 {
-  pi = fdserial_open(1, 0, 0, 19200);         //Open a serial connection
+  pi = fdserial_open(31, 30, 0, 19200);       //Open a serial connection
   
   char cmd[15];                               //Stores the raw command string
   
