@@ -3,14 +3,15 @@
 #Python version of PiLo
 import serial
 import time
+
 class PiLo:
 
     def __init__(self):
         print("Loading up serial communication...")
-        self.ser = serial.Serial(port='/dev/ttyS0', baudrate=19200)
+        self.ser = serial.Serial(port='/dev/ttyUSB0', baudrate=19200)
         print("waiting for port to come online")
         time.sleep(1)
-        if self.ser.is_open:
+        if self.ser.isOpen:
             print("Port is working")
         else:
             print("Could not establish, please check the pins are in the right sockets and the EEPROM has been set correctly")
@@ -21,7 +22,7 @@ class PiLo:
         for c in l:
             output += c
             if len(output) == 8:
-                self.ser.write(output.encode('utf-8'));
+                self.ser.write(output.encode('utf-8'))
                 self.ser.flush()
                 output = ""
                 time.sleep(0.000001)
@@ -40,11 +41,11 @@ if __name__ == "__main__":
     print("Driving forward 20 ticks, if the robot doesn't move, you've done something wrong")
     p.sendCommand(0, 1, 1) #this shouldnt move the robot, but will warm up the servos
     p.sendCommand(0, 50, 50)
-    time.wait(1)
+    time.sleep(1)
     p.sendCommand(0, -50, 52)
-    time.wait(1)
+    time.sleep(1)
     p.sendCommand(0,50,50)
-    time.wait(1)
+    time.sleep(1)
     p.sendCommand(0, 52, -50)
-    time.wait(1)
+    time.sleep(1)
     print("done")
